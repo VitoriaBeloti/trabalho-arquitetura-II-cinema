@@ -1,0 +1,10 @@
+- Concluídos
+
+- Em desenvolvimento
+
+-> Loop para a validação do valor inserido
+
+- Não iniciados
+
+-> Impressão da matriz na tela
+-> Reserva dos acentos
