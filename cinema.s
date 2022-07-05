@@ -22,6 +22,9 @@ textocompra:  .asciiz "\nCompra de poltronas\n"
 # vetor com as poltronas
 poltronas: .space 35*4;
 
+# textos de teste
+textoteste: .asciiz "Caiu no else 1\n"
+
 .text
 
 .globl main
@@ -63,36 +66,37 @@ MENU:
 
         li      $v0,    READ_KEYBOARD_INT   # syscall para ler do teclado
         syscall
-        move    $t0,    $v0                 # Salva o valor lido para $t0
+        move    $s0,    $v0                 # Salva o valor lido para $s0
 
 
         MAIOR = 4;
-        MENOR = 1;
+        MENOR = 0;
         
-        li 	$t5, MAIOR                    # t5 = 4
-        slt $t1, $t5, $t0		          # Verifica se o valor lido é menor que 4
+        li 	$t1, MAIOR                  # t4 = 4
+        blt	$t1, $s0, ELSE1             # Se $s0 < 4, entra no ELSE1 
+        bge	$s0, $t1, ELSE2	            # Se $s0 >= 4, entra no ELSE2
 
-        bne	$t1, $zero, ELSE1             # Se nao for, entra no ELSE1         	  
-        
-        ELSE1:
-            li $t5, MENOR                  # t5 = 1
-            slt $t1, $t5, $t0		       # Verifica se o valor lido é menor que 1
+    ELSE1:
+        li      $v0,    PRINT_STR           # syscall para imprimir na tela
+        la      $a0,    textoteste
+        syscall
 
-            bne $t1, $zero, ELSE2          # Se for, entra no ELSE2
+
+        li $t1, MENOR                  # t4 = 0
+        bgt $s0, $t1, END_WHILE        # Se $s0 > 0, entra no END_WHILE
+        ble	$s0, $t1, ELSE2     	   # Se $s0 <= 0, entra no ELSE2
             
-            ELSE2:
-                li $v0, PRINT_STR          # syscall para imprimir na tela
-                la $a0, textopinvalid      # Imprime mensagem de erro
-                syscall
+    ELSE2:
+        li $v0, PRINT_STR          # syscall para imprimir na tela
+        la $a0, textopinvalid      # Imprime mensagem de erro
+        syscall
 
-                j WHILE_LOOP
-        
-	    j END_WHILE
+        j WHILE_LOOP
 
     END_WHILE:
-        beq $t0, 1, COMPRAR_POLTRONA      # Se o valor lido for 1, chama a funcao COMPRAR_POLTRONA
-        beq $t0, 2, IMPRIME_POLTRONAS     # Se o valor lido for 2, chama a funcao VER_ACENTOS
-        beq $t0, 3, SAIR                  # Se o valor lido for 3, chama a funcao SAIR
+        beq $s0, 1, COMPRAR_POLTRONA      # Se o valor lido for 1, chama a funcao COMPRAR_POLTRONA
+        beq $s0, 2, IMPRIME_POLTRONAS     # Se o valor lido for 2, chama a funcao VER_ACENTOS
+        beq $s0, 3, SAIR                  # Se o valor lido for 3, chama a funcao SAIR
 
     SAIR:
         li      $v0,    PRINT_STR           # syscall para imprimir na tela
