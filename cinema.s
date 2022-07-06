@@ -58,7 +58,11 @@ MENU:
     la      $a0,    textop2
     syscall 
 
-    WHILE_LOOP:
+    li      $v0,    PRINT_STR           # syscall para imprimir na tela
+    la      $a0,    textop3
+    syscall 
+
+    MENU_LOOP:
 
         li      $v0,    PRINT_STR           # syscall para imprimir na tela
         la      $a0,    textoinstrucao
@@ -73,9 +77,9 @@ MENU:
         MENOR = 0;
         
         li 	$t1, MAIOR                  # t4 = 4
-        blt	$t1, $s0, ELSE1             # Se $s0 < 4, entra no ELSE1 
         bge	$s0, $t1, ELSE2	            # Se $s0 >= 4, entra no ELSE2
-
+        blt	$t1, $s0, ELSE1             # Se $s0 < 4, entra no ELSE1 
+        
     ELSE1:
         li      $v0,    PRINT_STR           # syscall para imprimir na tela
         la      $a0,    textoteste
@@ -83,7 +87,7 @@ MENU:
 
 
         li $t1, MENOR                  # t4 = 0
-        bgt $s0, $t1, END_WHILE        # Se $s0 > 0, entra no END_WHILE
+        bgtz $s0, END_WHILE        # Se $s0 > 0, entra no END_WHILE
         ble	$s0, $t1, ELSE2     	   # Se $s0 <= 0, entra no ELSE2
             
     ELSE2:
@@ -91,7 +95,7 @@ MENU:
         la $a0, textopinvalid      # Imprime mensagem de erro
         syscall
 
-        j WHILE_LOOP
+        j MENU_LOOP
 
     END_WHILE:
         beq $s0, 1, COMPRAR_POLTRONA      # Se o valor lido for 1, chama a funcao COMPRAR_POLTRONA
