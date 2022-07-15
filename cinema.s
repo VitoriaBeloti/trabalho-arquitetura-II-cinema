@@ -201,10 +201,126 @@ IMPRIME_POLTRONAS:
 
     jr $ra
 
-    #Funcao para comprar uma poltrona
+        #Funcao para comprar uma poltrona
 COMPRAR_POLTRONA:
     li     $v0,    PRINT_STR           # syscall para imprimir na tela
     la     $a0,    textocompra
     syscall
-    
-    jr $ra    
+
+    COMPRA_LINHA_LOOP:
+
+        li      $v0,    PRINT_STR           # syscall para imprimir na tela
+        la      $a0,    textocompralinha
+        syscall
+
+        li      $v0,    READ_KEYBOARD_INT   # syscall para ler do teclado
+        syscall
+        move    $s0,    $v0                 # Salva o valor lido para $s0
+
+        MAIORLINHA = 8;
+        MENORLINHA = 0;
+        
+        li 	    $t1,    MAIORLINHA                     # t8 = 8
+        bge	    $s0,    $t1,    VALOR_LINHA_INVALIDO    # Se $s0 >= 8, entra no VALOR_INVALIDO
+        blt	    $t1,    $s0,    ELSE_LINHA              # Se $s0 < 8, entra no ELSE_LINHA
+
+    ELSE_LINHA:
+        li      $t1,    MENORLINHA                     # t4 = 0
+        bgtz    $s0,    END_WHILE_LINHA                # Se $s0 > 0, entra no END_WHILE_LINHA
+        ble	    $s0,    $t1,    VALOR_LINHA_INVALIDO   # Se $s0 <= 0, entra no VALOR_INVALIDO
+            
+    VALOR_LINHA_INVALIDO:
+        li      $v0,    PRINT_STR          # syscall para imprimir na tela
+        la      $a0,    textopinvalid      # Imprime mensagem de erro
+        syscall
+
+    END_WHILE_LINHA:
+        beq     $s0,    1,      COMPRA_COLUNA_LOOP       # Se o valor lido for 1, chama a funcao COMPRA_COLUNA_LOOP
+        beq     $s0,    2,      COMPRA_COLUNA_LOOP       # Se o valor lido for 2, chama a funcao COMPRA_COLUNA_LOOP
+        beq     $s0,    3,      COMPRA_COLUNA_LOOP       # Se o valor lido for 3, chama a funcao COMPRA_COLUNA_LOOP
+        beq     $s0,    4,      COMPRA_COLUNA_LOOP       # Se o valor lido for 4, chama a funcao COMPRA_COLUNA_LOOP
+        beq     $s0,    5,      COMPRA_COLUNA_LOOP       # Se o valor lido for 5, chama a funcao COMPRA_COLUNA_LOOP
+        beq     $s0,    6,      COMPRA_COLUNA_LOOP       # Se o valor lido for 6, chama a funcao COMPRA_COLUNA_LOOP
+        beq     $s0,    7,      COMPRA_COLUNA_LOOP       # Se o valor lido for 7, chama a funcao COMPRA_COLUNA_LOOP
+
+        j COMPRA_LINHA_LOOP
+
+    COMPRA_COLUNA_LOOP:
+
+        li      $v0,    PRINT_STR           # syscall para imprimir na tela
+        la      $a0,    textocompracoluna
+        syscall
+
+        li      $v0,    READ_KEYBOARD_INT   # syscall para ler do teclado
+        syscall
+        move    $s0,    $v0                 # Salva o valor lido para $s0
+
+        MAIORCOLUNA = 6;
+        MENORCOLUNA = 0;
+        
+        li 	    $t1,    MAIORCOLUNA                     # t8 = 8
+        bge	    $s0,    $t1,    VALOR_COLUNA_INVALIDO    # Se $s0 >= 8, entra no VALOR_INVALIDO
+        blt	    $t1,    $s0,    ELSE_COLUNA              # Se $s0 < 8, entra no ELSE_COLUNA
+
+    ELSE_COLUNA:
+        li      $t1,    MENORCOLUNA                    # t4 = 0
+        bgtz    $s0,    END_WHILE_COLUNA                # Se $s0 > 0, entra no END_WHILE_COLUNA
+        ble	    $s0,    $t1,    VALOR_COLUNA_INVALIDO   # Se $s0 <= 0, entra no VALOR_INVALIDO
+            
+    VALOR_COLUNA_INVALIDO:
+        li      $v0,    PRINT_STR          # syscall para imprimir na tela
+        la      $a0,    textopinvalid      # Imprime mensagem de erro
+        syscall
+
+    END_WHILE_COLUNA:
+        beq     $s0,    1,      TEXTO_DISP       # Se o valor lido for 1, chama a funcao TEXTO_DISP
+        beq     $s0,    2,      TEXTO_DISP       # Se o valor lido for 2, chama a funcao TEXTO_DISP
+        beq     $s0,    3,      TEXTO_DISP       # Se o valor lido for 3, chama a funcao TEXTO_DISP
+        beq     $s0,    4,      TEXTO_DISP       # Se o valor lido for 4, chama a funcao TEXTO_DISP
+        beq     $s0,    5,      TEXTO_DISP       # Se o valor lido for 5, chama a funcao TEXTO_DISP
+
+    ELSE_COLUNA:
+        li      $t1,    MENORCOLUNA                    # t4 = 0
+        bgtz    $s0,    END_WHILE_COLUNA                # Se $s0 > 0, entra no END_WHILE_COLUNA
+        ble	    $s0,    $t1,    VALOR_COLUNA_INVALIDO   # Se $s0 <= 0, entra no VALOR_INVALIDO
+
+        j COMPRA_COLUNA_LOOP
+
+    TEXTO_DISP:
+        li      $v0,    PRINT_STR           # syscall para imprimir na tela
+        la      $a0,    textopoltronadisp
+        syscall
+
+  jr $ra
+
+    @ VALIDAR_POLTRONA:
+        
+    @      li      $t1,    4                     # t4 = 4
+    @      mult    $s0,    $t1                  # $s0 = $s0 * 4
+    @      mflo    $s0                         # $s0 = $s0 / 4
+        
+    @      li      $t1,    4                     # t4 = 4
+    @      mult    $s1,    $t1                  # $s1 = $s1 * 4
+    @      mflo    $s1                          # $s1 = $s1 / 4
+        
+    @      li      $t1,    4                     # t4 = 4
+    @      mult    $s2,    $t1                  # $s2 = $s2 * 4
+    @      mflo    $s2                          # $s2 = $s2 / 4
+        
+    @      li      $t1,    4                     # t4 = 4
+    @      mult    $s3,    $t1                  # $s3 = $s3 * 4
+    @      mflo    $s3                          # $s3 = $s3 / 4
+        
+    @      li      $t1,    4                     # t4 = 4
+    @      mult    $s4,    $t1                  # $s4 = $s4 * 4
+    @      mflo    $s4                          # $s4 = $s4 / 4
+        
+    @      li      $t1,    4                     # t4 = 4
+    @      mult    $s5,    $t1                  # $s5 = $s5 * 4
+    @      mflo    $s5                          # $s5 = $s5 / 4
+        
+    @      li      $t1,    4                     # t4 = 4
+    @      mult    $s6,    $t1                  # $s6 = $s6 * 4
+    @      mflo    $s6                          # $s6 = $s6 / 4
+
+    @ jr $ra   
