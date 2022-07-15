@@ -25,7 +25,13 @@ textopoltronaslivre: .asciiz "L"
 textopoltronaslegenda: .asciiz "\nLegenda:\n"
 textopoltronaslegenda1: .asciiz "X - Poltrona Ocupada\n"
 textopoltronaslegenda2: .asciiz "L - Poltrona Livre\n"
-# textopoltronaslegenda2: .asciiz "L - Poltrona Ocupada\n"
+textopoltronaslegenda3: .asciiz "COLUNA\n"
+textopoltronaslegenda4: .asciiz "F"
+textopoltronaslegenda5: .asciiz "I"
+textopoltronaslegenda6: .asciiz "L"
+textopoltronaslegenda7: .asciiz "A"
+textopoltronaslegenda8: .asciiz " "
+textopoltronaslegenda9: .asciiz "\n"
 
 # texto de compra de poltronas
 textocompra:  .asciiz "\nCompra de poltronas\n"
@@ -87,26 +93,26 @@ MENU:
         MAIOR = 4;
         MENOR = 0;
         
-        li 	$t1, MAIOR                  # t4 = 4
-        bge	$s0, $t1, VALOR_INVALIDO	# Se $s0 >= 4, entra no VALOR_INVALIDO
-        blt	$t1, $s0, ELSE              # Se $s0 < 4, entra no ELSE 
+        li 	    $t1,    MAIOR                     # t4 = 4
+        bge	    $s0,    $t1,    VALOR_INVALIDO    # Se $s0 >= 4, entra no VALOR_INVALIDO
+        blt	    $t1,    $s0,    ELSE              # Se $s0 < 4, entra no ELSE 
         
     ELSE:
-        li $t1, MENOR                  # t4 = 0
-        bgtz $s0, END_WHILE            # Se $s0 > 0, entra no END_WHILE
-        ble	$s0, $t1, VALOR_INVALIDO   # Se $s0 <= 0, entra no VALOR_INVALIDO
+        li      $t1,    MENOR                    # t4 = 0
+        bgtz    $s0,    END_WHILE                # Se $s0 > 0, entra no END_WHILE
+        ble	    $s0,    $t1,    VALOR_INVALIDO   # Se $s0 <= 0, entra no VALOR_INVALIDO
             
     VALOR_INVALIDO:
-        li $v0, PRINT_STR          # syscall para imprimir na tela
-        la $a0, textopinvalid      # Imprime mensagem de erro
+        li      $v0,    PRINT_STR          # syscall para imprimir na tela
+        la      $a0,    textopinvalid      # Imprime mensagem de erro
         syscall
 
         j MENU_LOOP
 
     END_WHILE:
-        beq $s0, 1, IMPRIME_POLTRONAS      # Se o valor lido for 1, chama a funcao IMPRIME_POLTRONAS
-        beq $s0, 2, COMPRAR_POLTRONA       # Se o valor lido for 2, chama a funcao COMPRAR_POLTRONA
-        beq $s0, 3, SAIR                   # Se o valor lido for 3, chama a funcao SAIR
+        beq     $s0,    1,      IMPRIME_POLTRONAS      # Se o valor lido for 1, chama a funcao IMPRIME_POLTRONAS
+        beq     $s0,    2,      COMPRAR_POLTRONA       # Se o valor lido for 2, chama a funcao COMPRAR_POLTRONA
+        beq     $s0,    3,      SAIR                   # Se o valor lido for 3, chama a funcao SAIR
 
     SAIR:
         li      $v0,    PRINT_STR           # syscall para imprimir na tela
@@ -126,13 +132,46 @@ IMPRIME_POLTRONAS:
     la      $a0,    textopoltronas
     syscall
 
-    addi $t0, $zero, 0                  # t0 = 0
-    addi $t2, $zero, 0                  # t2 = 0
+    li      $v0,    PRINT_STR           # syscall para imprimir na tela
+    la      $a0,    textopoltronaslegenda8
+    syscall
+
+    li      $v0,    PRINT_STR           # syscall para imprimir na tela
+    la      $a0,    textopoltronaslegenda3
+    syscall
+
+    li      $v0,    PRINT_STR           # syscall para imprimir na tela
+    la      $a0,    textopoltronaslegenda8
+    syscall
+
+    addi    $t0,    $zero,      0                  # t0 = 0
+    addi    $t2,    $zero,      0                  # t2 = 0
+    addi    $t5,    $zero,      1                  # t3 = 0
+
+    PRINT_LOOP_LEGENDA:
+        beq    $t5,    6,    END_PRINT_LOOP_LEGENDA  # Se $t5 == 6, entra no END_PRINT_LOOP_LEGENDA
+
+        li     $v0,    PRINT_INT           # syscall para imprimir na tela
+        move   $a0,    $t5                 # Imprime o valor de $t5
+        syscall
+
+        li     $v0,    PRINT_STR                # syscall para imprimir na tela
+        la     $a0,    textopoltronaslegenda8   # Imprime a quebra de linha
+        syscall
+
+        addi   $t5,    $t5,     1          # Incrementa $t5
+
+        j      PRINT_LOOP_LEGENDA          # Volta para o inicio do loop
+
+    END_PRINT_LOOP_LEGENDA:
+        li     $v0,    PRINT_STR                # syscall para imprimir na tela
+        la     $a0,    textopoltronaslegenda9   # Imprime a quebra de linha
+        syscall
 
     # Loop para imprimir a linha de poltronas
     PRINT_LOOP_LINE:
 
-        beq     $t0,    7,   END_PRINT_LOOP_LINE    # Se t0 == 7, entra no END_PRINT_LOOP_LINE
+        beq     $t0,    7,   END_PRINT_LOOP_LINE    # Se t0 == 8, entra no END_PRINT_LOOP_LINE
 
         addi    $t0,    $t0,        1               # t0 = t0 + 1
         addi    $t1,    $zero,      0               # t1 = 0
@@ -153,7 +192,7 @@ IMPRIME_POLTRONAS:
 
             addi    $t2,    $t2,    4                       # t2 = t2 + 4
 
-            lw		$t3,  poltronasArray($t2)		        # t3 = poltronasArray[t2]
+            lw		$t3,    poltronasArray($t2)		        # t3 = poltronasArray[t2]
 
             beq     $t4,    0,       POLTRONA_LIVRE         # Se t4 == 0, entra no POLTRONA_LIVRE
 
@@ -161,16 +200,65 @@ IMPRIME_POLTRONAS:
             la      $a0,    textopoltronasocupado
             syscall
 
-            li      $v0,    PRINT_STR                   # syscall para imprimir na tela
+            li      $v0,    PRINT_STR                       # syscall para imprimir na tela
             la      $a0,    textopoltronasdiv
             syscall
 
             j     PRINT_LOOP_COL                            # Chama a funcao PRINT_LOOP_COL
         END_PRINT_LOOP_COL:
+            li      $v0,    PRINT_STR                       # syscall para imprimir na tela
+            la      $a0,    textopoltronaslegenda8
+            syscall
+
+            li      $v0,    PRINT_INT                       # syscall para imprimir na tela
+            move    $a0,    $t0                             # Imprime o valor de $t0
+            syscall
+
+            blt		$t0,    5,      PRINT_LETRA	            # if $t0 < 5 chama a função PRINT_LETRA
+
             j       PRINT_LOOP_LINE                         # Chama a funcao PRINT_LOOP_LINE
 
-        POLTRONA_LIVRE:
+        PRINT_LETRA:
             li      $v0,    PRINT_STR                       # syscall para imprimir na tela
+            la      $a0,    textopoltronaslegenda8
+            syscall
+
+            beq    $t0,    1,       PRINT_F             # Se $t0 == 1, entra no PRINT_F
+            beq    $t0,    2,       PRINT_I             # Se $t0 == 2, entra no PRINT_I
+            beq    $t0,    3,       PRINT_L             # Se $t0 == 3, entra no PRINT_L
+            beq    $t0,    4,       PRINT_A             # Se $t0 == 4, entra no PRINT_A
+
+        PRINT_F:
+            li     $v0,    PRINT_STR                    # syscall para imprimir na tela
+            la     $a0,    textopoltronaslegenda4
+            syscall
+
+            j       PRINT_LOOP_LINE                     # Chama a funcao PRINT_LOOP_LINE
+
+        PRINT_I:
+            li     $v0,    PRINT_STR                    # syscall para imprimir na tela
+            la     $a0,    textopoltronaslegenda5
+            syscall
+
+            j       PRINT_LOOP_LINE                     # Chama a funcao PRINT_LOOP_LINE
+
+        PRINT_L:
+            li     $v0,    PRINT_STR                    # syscall para imprimir na tela
+            la     $a0,    textopoltronaslegenda6
+            syscall
+
+            j       PRINT_LOOP_LINE                     # Chama a funcao PRINT_LOOP_LINE
+
+        PRINT_A:
+            li     $v0,    PRINT_STR                    # syscall para imprimir na tela
+            la     $a0,    textopoltronaslegenda7
+            syscall
+
+            j       PRINT_LOOP_LINE                     # Chama a funcao PRINT_LOOP_LINE
+                
+
+        POLTRONA_LIVRE:
+            li      $v0,    PRINT_STR                   # syscall para imprimir na tela
             la      $a0,    textopoltronaslivre
             syscall
 
@@ -178,7 +266,7 @@ IMPRIME_POLTRONAS:
             la      $a0,    textopoltronasdiv
             syscall
 
-            j       PRINT_LOOP_COL                           # Chama a funcao PRINT_LOOP_LINE
+            j       PRINT_LOOP_COL                      # Chama a funcao PRINT_LOOP_LINE
 
     END_PRINT_LOOP_LINE:
         li      $v0,    PRINT_STR               # syscall para imprimir na tela
@@ -197,7 +285,7 @@ IMPRIME_POLTRONAS:
         la      $a0,    textopoltronaslegenda2
         syscall
 
-        j MENU_LOOP
+        j MENU
 
     jr $ra
 
